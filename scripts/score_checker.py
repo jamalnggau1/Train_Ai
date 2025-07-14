@@ -80,5 +80,8 @@ def run_score_checker():
     for key, val in summary.items():
         print(f"   - {key}: {val}")
 
+def compute_score(code):
+    return analyze_code(code)
+
 if __name__ == "__main__":
     run_score_checker()

@@ -1,0 +1,5 @@
+{"instruction": "Generate automation from HAR recording including custom headers.", "input": "POST request captured in HAR includes authorization and content-type headers. Reproduce the same request in Python using the requests module.", "output": ""}
+{"instruction": "Extract an email from a given string.", "input": "The input string may contain random text and one valid email address. Return the email address using regex.", "output": ""}
+{"instruction": "Send a GET request with query parameters.", "input": "Target endpoint is https://api.example.com/search. Use 'q=python' and 'page=2' as query parameters. Use the requests module.", "output": ""}
+{"instruction": "Create a Python script to read a JSON file and print all keys.", "input": "The script should read data.json and print the list of top-level keys in the JSON file.", "output": ""}
+{"instruction": "Build a Web3 transaction sender script.", "input": "Use Web3.py to send 0.01 ETH from a private key to another address on the Ethereum testnet. Include necessary imports and transaction signing.", "output": ""}
