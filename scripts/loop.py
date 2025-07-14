@@ -1,39 +1,52 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import json
 import uuid
-import os
+from scripts.score_checker import run_score_checker
 from data.semantic_checker import run_semantic_checker
-import extract_failed_to_dataset
+from scripts import extract_failed_to_dataset
 from generator import load_model, load_dataset, generate_script
 from evaluator import evaluate_script
 
-os.makedirs("data/failed_outputs", exist_ok=True)
+# Path dataset
 DATA_PATH = "data/dataset.jsonl"
+GENERATED_PATH = "data/generated.jsonl"
+FAILED_DIR = "data/failed_outputs"
+os.makedirs(FAILED_DIR, exist_ok=True)
 
 
 def save_jsonl_line(path, item):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "a", encoding="utf-8") as f:
-        f.write(json.dumps(item) + "\n")
+        f.write(json.dumps(item, ensure_ascii=False) + "\n")
+
+
+def load_existing_ids(path):
+    ids = set()
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                try:
+                    ids.add(json.loads(line)["id"])
+                except:
+                    continue
+    return ids
+
 
 def main_loop():
     print("🔁 Memulai loop self-training...")
 
     pipe = load_model()
+    existing_ids = load_existing_ids(GENERATED_PATH)
 
-    # Hitung performa
-    success_count = 0
-    fail_count = 0
-    json_count = 0
-    short_count = 0
-    syntax_error_count = 0
-    other_error_count = 0
+    # Statistik
+    success_count = fail_count = 0
+    json_count = short_count = syntax_error_count = other_error_count = 0
 
-    # Baca .jsonl dan tambahkan ID kalau belum ada
     data = []
-    with open(DATA_PATH, "r") as f:
+    with open(DATA_PATH, "r", encoding="utf-8") as f:
         for line in f:
             sample = json.loads(line)
             if "id" not in sample:
@@ -45,76 +58,72 @@ def main_loop():
     for sample in data:
         print(f"\n🎯 Memproses ID: {sample['id'][:8]}")
 
+        if sample["id"] in existing_ids:
+            print("⚠️ Sudah ada di generated.jsonl, lewati.")
+            continue
+
         try:
             script_code = generate_script(pipe, sample).strip()
             sample["output"] = script_code
 
-            # Deteksi jika output berupa JSON atau string non-kode
+            # Filter 1: Output seperti JSON
             if script_code.startswith("{") or script_code.startswith("["):
-                print("⚠️ Output tampaknya JSON, bukan script Python. Diskip.")
+                print("⚠️ Output tampaknya JSON, bukan Python.")
                 json_count += 1
-                save_jsonl_line("data/failed_outputs/non_python.jsonl", {
-                    "instruction": sample["instruction"],
-                    "input": sample["input"],
-                    "output": script_code
-                })
+                save_jsonl_line(f"{FAILED_DIR}/non_python.jsonl", sample)
                 continue
 
-            # Jika terlalu pendek atau kosong
+            # Filter 2: Terlalu pendek
             if len(script_code.splitlines()) < 2:
-                print("⚠️ Output terlalu pendek, kemungkinan tidak valid. Diskip.")
+                print("⚠️ Output terlalu pendek.")
                 short_count += 1
-                save_jsonl_line("data/failed_outputs/too_short.jsonl", {
-                    "instruction": sample["instruction"],
-                    "input": sample["input"],
-                    "output": script_code
-                })
+                save_jsonl_line(f"{FAILED_DIR}/too_short.jsonl", sample)
                 continue
 
-            # Evaluasi kode Python
+            # Evaluasi eksekusi script
             eval_result = evaluate_script(script_code)
 
             if eval_result["success"]:
                 print("✅ Script berhasil dijalankan.")
                 success_count += 1
-                save_jsonl_line("data/generated.jsonl", sample)
+                save_jsonl_line(GENERATED_PATH, sample)
             else:
-                print("❌ Script gagal. Disimpan ke failed_outputs.")
-                print("📝 Script yang dihasilkan:")
-                print(script_code)
-                print("🪲 Error saat evaluasi:")
-                print(eval_result["stderr"])
-                
+                print("❌ Script gagal.")
+                print("🪲 Error:", eval_result["stderr"])
                 stderr = eval_result["stderr"]
+
                 if "SyntaxError" in stderr:
                     syntax_error_count += 1
                 else:
                     other_error_count += 1
 
                 fail_count += 1
-                error_sample = {
+                save_jsonl_line(f"{FAILED_DIR}/errors.jsonl", {
                     "instruction": sample["instruction"],
                     "input": sample["input"],
                     "generated": script_code,
                     "error": stderr
-                }
-                save_jsonl_line("data/failed_outputs/errors.jsonl", error_sample)
+                })
 
         except Exception as e:
             print("🚨 Error tak terduga:", e)
             other_error_count += 1
             fail_count += 1
 
-    # Tampilkan ringkasan
+    # Ringkasan akhir
     print("\n📊 Ringkasan:")
-    print(f"✅ Berhasil: {success_count} script")
-    print(f"❌ Gagal: {fail_count} script")
-    print(f"⚠️ JSON: {json_count} | Terlalu pendek: {short_count} | SyntaxError: {syntax_error_count} | Error lain: {other_error_count}")
-    # Di akhir loop.py
+    print(f"✅ Berhasil: {success_count}")
+    print(f"❌ Gagal: {fail_count}")
+    print(f"⚠️ JSON: {json_count} | Terlalu pendek: {short_count} | Syntax: {syntax_error_count} | Lain: {other_error_count}")
 
 
 if __name__ == "__main__":
-    main_loop() 
+    main_loop()
+    print("\n🔁 Menambahkan error ke dataset...")
     extract_failed_to_dataset.extract_failed_to_dataset()
+
+    print("\n🧠 Menjalankan semantic checker...")
     run_semantic_checker()
 
+    print("\n📐 Menjalankan score checker...")
+    run_score_checker()
