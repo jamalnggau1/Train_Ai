@@ -1,0 +1,1 @@
+{"instruction": "Create a Python script to fetch user data", "input": "[GET] https://api.example.com/users", "output": ""}
