@@ -13,7 +13,7 @@ from evaluator import evaluate_script
 from data.semantic_checker import check_semantic_compatibility
 from scripts.score_checker import compute_score
 
-DATA_PATH = "data/manual_testset.jsonl"
+DATA_PATH = "data/dataset.jsonl"
 GEN_PATH = "data/generated.jsonl"
 LOG_PATH = "logs/auto_loop.log"
 
