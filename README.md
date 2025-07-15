@@ -37,7 +37,7 @@ Train_Ai/
   "instruction": "Generate a POST request with custom headers.",
   "input": "Send request to https://api.example.com/data using the requests module",
   "output": ""
-}
+}```
 
 ---
 
