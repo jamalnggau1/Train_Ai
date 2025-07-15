@@ -39,7 +39,7 @@ def generate_script(pipe, sample, max_tokens=300):
         f"# Instruction: {sample['instruction']}\n"
         f"# Based on the following HAR data:\n{sample['input']}\n\n"
     )
-    result = pipe(prompt, max_new_tokens=max_tokens, do_sample=True, temperature=0.5
+    result = pipe(prompt, max_new_tokens=max_tokens, do_sample=True, temperature=0.5)
     generated = result[0]["generated_text"]
 
     cleaned = generated[len(prompt):].strip()
