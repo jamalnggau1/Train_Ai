@@ -18,7 +18,12 @@ def remove_duplicates_from_generated():
             total += 1
             try:
                 sample = json.loads(line)
-                key = sample.get("instruction", "") + sample.get("input", "") + sample.get("output", "")
+                key = (
+    sample.get("instruction", "").strip()
+    + sample.get("input", "").strip()
+    + sample.get("output", "").strip()
+    )
+
                 if key not in seen:
                     seen.add(key)
                     unique_samples.append(sample)
