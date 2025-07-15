@@ -45,8 +45,6 @@ Train_Ai/
 Python 3.10+
 
 Paket Python yang diperlukan:
-
-```
 pip install -r requirements.txt
 requirements.txt
 transformers
