@@ -15,7 +15,7 @@ from scripts.score_checker import compute_score
 
 DATA_PATH = "data/dataset.jsonl"
 GEN_PATH = "data/generated.jsonl"
-FINAL_PATH = "data/final_dataset.jsonl"
+FINAL_PATH = "data/final_datasets.jsonl"
 LOG_PATH = "logs/auto_loop.log"
 
 RETRY_LIMIT = 3
