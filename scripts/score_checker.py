@@ -31,6 +31,7 @@ def analyze_code(code):
         "variable_count": variable_count,
         "hardcoded_values": hardcoded_values,
         "syntax_valid": syntax_valid,
+        "syntax_valid_percent": 100.0 if syntax_valid else 0.0,  # ✅ Tambahkan ini
     }
 
 def run_score_checker():
