@@ -31,8 +31,9 @@ Train_Ai/
 │   ├── extract_failed_to_dataset.py  # Ekstraksi ulang data gagal ke dataset
 │   └── download_model.py        # (Opsional) Unduh model awal dari HuggingFace
 📚 Format Dataset
-
-```{
+```
+```
+{
   "instruction": "Generate a POST request with custom headers.",
   "input": "Send request to https://api.example.com/data using the requests module",
   "output": ""
