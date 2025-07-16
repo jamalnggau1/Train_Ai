@@ -36,8 +36,12 @@ def save_outputs(data, output_path="data/generated.jsonl"):
 
 def generate_script(pipe, sample, max_tokens=300):
     prompt = (
-        f"# Instruction: {sample['instruction']}\n"
-        f"# Based on the following HAR data:\n{sample['input']}\n\n"
+    f"Generate a complete runnable Python script based on the instruction and HAR data below.\n"
+    f"Include all necessary `import` statements.\n"
+    f"Only return code. Do not add any explanations or comments.\n\n"
+    f"Instruction: {sample['instruction']}\n\n"
+    f"HAR:\n{sample['input']}\n\n"
+    f"Python Code:\n"
     )
     result = pipe(prompt, max_new_tokens=max_tokens, do_sample=True, temperature=0.5)
     generated = result[0]["generated_text"]
