@@ -38,7 +38,8 @@ def load_existing_ids(path):
 def main_loop():
     print("🔁 Memulai loop self-training...")
 
-    pipe = load_model()
+    model, tokenizer = load_model()
+
     existing_ids = load_existing_ids(GENERATED_PATH)
 
     # Statistik
@@ -63,7 +64,8 @@ def main_loop():
             continue
 
         try:
-            script_code = generate_script(pipe, sample).strip()
+            script_code = generate_script(model, tokenizer, sample).strip()
+
             sample["output"] = script_code
 
             # Filter 1: Output seperti JSON
