@@ -41,8 +41,10 @@ def process_sample(pipe, sample, retry_count=0):
         return False
 
     try:
-        script = generate_script(pipe, sample).strip()
+        model, tokenizer = pipe  # ⬅️ Tambahkan ini!
+        script = generate_script(model, tokenizer, sample).strip()
         sample["output"] = script
+
 
         # Evaluasi sintaks & eksekusi
         result = evaluate_script(script)
@@ -84,7 +86,7 @@ def process_sample(pipe, sample, retry_count=0):
         return process_sample(pipe, sample, retry_count + 1)
 
 def main():
-    pipe = load_model()
+    model, tokenizer = load_model()
 
     if not os.path.exists(DATA_PATH):
         log(f"❌ Tidak ada file {DATA_PATH}!")
@@ -99,7 +101,7 @@ def main():
         if "id" not in sample:
             sample["id"] = str(uuid.uuid4())
         log(f"🔁 Proses ID: {sample['id'][:8]}")
-        if process_sample(pipe, sample):
+        if process_sample((model, tokenizer), sample):
             success += 1
         time.sleep(SLEEP_BETWEEN_BATCH)
 
