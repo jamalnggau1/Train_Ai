@@ -21,11 +21,16 @@ def load_model():
 
 def load_dataset(jsonl_path="data/dataset.jsonl"):
     with open(jsonl_path, "r", encoding="utf-8") as f:
-        return [
-            json.loads(line)
-            for line in f
-            if '"output": ""' in line  # hanya yang belum memiliki output
-        ]
+        dataset = []
+        for line in f:
+            try:
+                item = json.loads(line)
+                if item.get("output", "") == "":
+                    dataset.append(item)
+            except json.JSONDecodeError:
+                continue  # Lewati jika format JSON salah
+        return dataset
+
 
 def save_outputs(data, output_path="data/generated.jsonl"):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
