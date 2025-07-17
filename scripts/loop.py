@@ -9,6 +9,8 @@ from data.semantic_checker import run_semantic_checker
 from scripts import extract_failed_to_dataset
 from generator import load_model, load_dataset, generate_script
 from evaluator import evaluate_script
+from scripts.semantic_checker_automation import run_semantic_checker_automation
+
 
 # Path dataset
 DATA_PATH = "data/dataset.jsonl"
@@ -124,6 +126,8 @@ if __name__ == "__main__":
     print("\n🔁 Menambahkan error ke dataset...")
     extract_failed_to_dataset.extract_failed_to_dataset()
 
+    run_semantic_checker_automation()
+    print("soft cheker")
     print("\n🧠 Menjalankan semantic checker...")
     run_semantic_checker()
 
