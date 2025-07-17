@@ -1,0 +1,12 @@
+web3>=6.0.0
+eth_account
+eth-brownie
+requests
+selenium
+beautifulsoup4
+lxml
+pandas
+undetected-chromedriver
+aiohttp
+pyppeteer
+fake_useragent
