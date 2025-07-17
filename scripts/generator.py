@@ -40,11 +40,14 @@ def save_outputs(data, output_path="data/generated.jsonl"):
 
 def generate_script(model, tokenizer, sample, max_tokens=300):
     prompt = (
-        f"Generate a complete runnable Python script based on the instruction and HAR data below.\n"
-        f"Include all necessary `import` statements.\n"
-        f"Only return code. Do not add any explanations or comments.\n\n"
-        f"Instruction: {sample['instruction']}\n\n"
-        f"Gunakan string pendek untuk key, jangan masukkan data asli jika terlalu panjang.\n"
+        "You are a Python coding assistant.\n"
+        "Generate a complete and runnable Python script based on the instruction and HAR data below.\n"
+        "Include all necessary `import` statements.\n"
+        "Only return code. Do not add any explanations or comments.\n"
+        "Use short placeholder strings for large values in headers or body (e.g., 'token123', 'sample_data').\n"
+        "Do not include actual long data.\n"
+        "Limit the script to essential logic only.\n\n"
+        f"Instruction:\n{sample['instruction']}\n\n"
         f"HAR:\n{sample['input']}\n\n"
         f"Python Code:\n"
     )
