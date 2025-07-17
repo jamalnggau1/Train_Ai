@@ -3,7 +3,7 @@ import json
 import os
 
 INPUT_PATH = "data/generated.jsonl"
-FINAL_PATH = "data/final_dataset.jsonl"
+FINAL_PATH = "data/final_dataset_soft.jsonl"
 REJECTED_PATH = "data/failed_outputs/errors.jsonl"
 
 automation_keywords = [
